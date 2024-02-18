@@ -72,11 +72,7 @@ function updateCanvasSize() {
     width = width * conversionFactor;
     height = height * conversionFactor;
   
-    const ctx = initializeCanvas(width, height);
-    if (ctx) {
-      // Placeholder for drawing logic
-      // drawGrid(ctx, ...);
-    }
+    const ctx = initializeCanvas(width, height, conversionFactor);
   }
   
   document.getElementById('plantSelection').addEventListener('change', function() {
@@ -84,34 +80,31 @@ function updateCanvasSize() {
   });
   
 
-  // Function to initialize the canvas
-  function initializeCanvas(width, height) {
+  function initializeCanvas(gardenWidth, gardenHeight) {
     const canvas = document.getElementById('gardenCanvas');
     if (canvas.getContext) {
-      const ctx = canvas.getContext('2d');
-  
-      // Set canvas size
-      canvas.width = width;
-      canvas.height = height;
-  
-      // Clear the canvas
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-  
-      return ctx;
+        const ctx = canvas.getContext('2d');
+
+        // Adding extra space for labels and margins
+        const extraWidth = 100; // Adjust based on your needs
+        const extraHeight = 50; // Adjust based on your needs
+
+        // Set canvas size including extra space
+        canvas.width = gardenWidth + extraWidth;
+        canvas.height = gardenHeight + extraHeight;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
+        return ctx;
     } else {
-      // Canvas not supported
-      alert('Canvas is not supported by your browser.');
-      return null;
+        console.error('Canvas is not supported by your browser.');
+        return null;
     }
-  }
+}
+
   
 // Function to draw the grid on the canvas, including underground spacing representation
-function drawGrid(ctx, width, height, varietyData) {
-    if (!varietyData || !varietyData.spacing) {
-        console.error('Invalid plant variety data provided to drawGrid');
-        console.error(varietyData);
-        return;
-    }
+function drawGrid(ctx, width, height, varietyData, units) {
+
     // Determine the larger spacing for overall plant spacing
     const aboveGroundRadius = varietyData.spacing.aboveGround.metric.radius;
     const belowGroundRadius = varietyData.spacing.belowGround.metric.radius;
@@ -149,7 +142,46 @@ function drawGrid(ctx, width, height, varietyData) {
         ctx.fillText(abbreviation, x, y);
       }
     }
+
+    ctx.strokeStyle = '#000000'; // Black for the boundary
+    ctx.strokeRect(0, 0, width, height);
+
+    const drawPlantingGrid = document.getElementById('drawPlantingGridCheckbox').checked;
+    if (drawPlantingGrid) {
+        drawPlantingGridLines(ctx, width, height, units);
+    }
 }  
+
+function drawPlantingGridLines(ctx, width, height, units) {
+    const gridSize = units === 'metric' ? 100 : 39.37; // 100 pixels = 1 meter or 39.37 pixels = 1 foot
+    ctx.strokeStyle = '#BBBBBB'; // Light grey for grid lines
+    ctx.beginPath();
+
+    // Vertical grid lines
+    for (let x = gridSize; x < width; x += gridSize) {
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, height);
+    }
+    // Horizontal grid lines
+    for (let y = gridSize; y < height; y += gridSize) {
+        ctx.moveTo(0, y);
+        ctx.lineTo(width, y);
+    }
+    ctx.stroke();
+
+    // Labels for dimensions at the bottom and right side
+    const unitLabel = units === 'metric' ? 'm' : 'ft';
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'bottom';
+    ctx.fillStyle = '#000000'; // Black for text
+    ctx.fillText(`${(width / gridSize).toFixed(1)} ${unitLabel}`, width, height + 20); // Bottom label
+    ctx.save();
+    ctx.translate(width + 20, height);
+    ctx.rotate(-Math.PI / 2);
+    ctx.fillText(`${(height / gridSize).toFixed(1)} ${unitLabel}`, 0, 20); // Side label
+    ctx.restore();
+}
+
 
   // Function to export the canvas as a PNG
   function exportCanvasAsPNG() {
@@ -167,7 +199,7 @@ function drawGrid(ctx, width, height, varietyData) {
   document.getElementById('exportButton').addEventListener('click', function() {
     exportCanvasAsPNG();
   });
-  
+
 function getPlantDataById(id) {
     return plantsData.plants.find(plant => plant.id === id);
   }
@@ -209,7 +241,6 @@ document.getElementById('generate').addEventListener('click', function() {
 
         // Now that we have the correct variety data, which includes spacing, we can draw the grid
         // Ensure the drawGrid function uses the varietyData for spacing, plant name, etc.
-        drawGrid(ctx, width, height, varietyData); // Pass the correct varietyData here
+        drawGrid(ctx, width, height, varietyData, units); // Pass the correct varietyData here
     }
 });
-  
