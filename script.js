@@ -105,47 +105,52 @@ function updateCanvasSize() {
     }
   }
   
-// Function to draw the grid on the canvas
-function drawGrid(ctx, width, height, plantSpacing, plantData) {
-    console.log(plantData)
-    const abbreviation = plantData.name.substring(0, 2).toUpperCase();
-    const plantGrowRadius = plantData.spacing.belowGround.metric.radius;
-  
-    // Calculate the number of plants per row and column
+// Function to draw the grid on the canvas, including underground spacing representation
+function drawGrid(ctx, width, height, varietyData) {
+    if (!varietyData || !varietyData.spacing) {
+        console.error('Invalid plant variety data provided to drawGrid');
+        console.error(varietyData);
+        return;
+    }
+    // Determine the larger spacing for overall plant spacing
+    const aboveGroundRadius = varietyData.spacing.aboveGround.metric.radius;
+    const belowGroundRadius = varietyData.spacing.belowGround.metric.radius;
+    const plantSpacing = Math.max(aboveGroundRadius, belowGroundRadius) * 2; // Use the larger radius for spacing calculation
+
+    const abbreviation = varietyData.name.substring(0, 2);
+
+    // Calculate the number of plants per row and column based on the determined spacing
     const plantsPerRow = Math.floor(width / plantSpacing);
     const plantsPerCol = Math.floor(height / plantSpacing);
-  
+
     // Loop through each plant position and draw the circles
     for (let row = 0; row < plantsPerCol; row++) {
       for (let col = 0; col < plantsPerRow; col++) {
-        // Calculate the center of each plant
         const x = col * plantSpacing + plantSpacing / 2;
         const y = row * plantSpacing + plantSpacing / 2;
-  
-        // Draw the larger growth radius circle
+
+        // Draw the underground radius circle in grey
         ctx.beginPath();
-        ctx.arc(x, y, plantGrowRadius, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(0, 128, 0, 0.2)'; // Semi-transparent
+        ctx.arc(x, y, belowGroundRadius, 0, Math.PI * 2, false);
+        ctx.fillStyle = '#80808080'; // Semi-transparent grey
         ctx.fill();
-  
-        // Draw the smaller plant circle
+
+        // Draw the above ground radius circle in green
         ctx.beginPath();
-        ctx.arc(x, y, plantGrowRadius / 2, 0, Math.PI * 2);
-        ctx.fillStyle = 'green';
+        ctx.arc(x, y, aboveGroundRadius, 0, Math.PI * 2, false);
+        ctx.fillStyle = '#00800040';
         ctx.fill();
-  
-        // Draw the plant abbreviation
-        ctx.fillStyle = 'white';
+
+        // Draw the plant abbreviation in white at the center
+        ctx.fillStyle = '#FFFFFF';
         ctx.font = 'bold 16px Arial';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(abbreviation, x, y);
       }
     }
-  }
-  
-  
-  
+}  
+
   // Function to export the canvas as a PNG
   function exportCanvasAsPNG() {
     const canvas = document.getElementById('gardenCanvas');
@@ -163,39 +168,48 @@ function drawGrid(ctx, width, height, plantSpacing, plantData) {
     exportCanvasAsPNG();
   });
   
-// Assuming plants.json is loaded into a variable named plantsData
-// For example: let plantsData = { "plants": [ ... ] };
-
-// Function to find plant data by id
 function getPlantDataById(id) {
     return plantsData.plants.find(plant => plant.id === id);
   }
   
 // Adjusted event listener for the 'Generate' button
 document.getElementById('generate').addEventListener('click', function() {
+    // Retrieve the selected plant and variety from the dropdowns
+    const selectedPlantId = document.getElementById('plantSelection').value;
+    const selectedVarietyName = document.getElementById('varietySelection').value;
+
+    // Find the selected plant data
+    const plantData = plantsData.plants.find(plant => plant.id === selectedPlantId);
+    if (!plantData) {
+        console.error('Selected plant data not found');
+        return;
+    }
+
+    // Find the specific variety data within the selected plant
+    const varietyData = plantData.varieties.find(variety => variety.name === selectedVarietyName);
+    if (!varietyData) {
+        console.error('Selected variety data not found');
+        return;
+    }
+
+    // Retrieve the dimensions entered by the user
     const units = document.getElementById('units').value;
     let width = parseFloat(document.getElementById('rectWidth').value);
     let height = parseFloat(document.getElementById('rectHeight').value);
-    const selectedSpeciesId = document.getElementById('plantSelection').value;
-    const selectedVarietyName = document.getElementById('varietySelection').value;
-  
-    const species = getPlantDataById(selectedSpeciesId);
-    const variety = species.varieties.find(variety => variety.name === selectedVarietyName);
-  
+
     // Convert the garden dimensions into pixels
-    const conversionFactor = units === 'metric' ? 100 : 39.37;
+    const conversionFactor = units === 'metric' ? 100 : 39.37; // Example conversion factor
     width *= conversionFactor;
     height *= conversionFactor;
-  
-    // Assuming plantSpacing needs to be recalculated if it depends on the variety
-    const plantSpacing = units === 'metric'
-        ? variety.spacing.aboveGround.metric.radius * 2
-        : variety.spacing.aboveGround.imperial.radius * 2;
-  
+
+    // Initialize the canvas with the calculated dimensions
     const ctx = initializeCanvas(width, height);
     if (ctx) {
-        ctx.clearRect(0, 0, width, height);
-        drawGrid(ctx, width, height, plantSpacing, variety); // Now passing the correct variety object
+        ctx.clearRect(0, 0, width, height); // Clear the canvas
+
+        // Now that we have the correct variety data, which includes spacing, we can draw the grid
+        // Ensure the drawGrid function uses the varietyData for spacing, plant name, etc.
+        drawGrid(ctx, width, height, varietyData); // Pass the correct varietyData here
     }
-  });
+});
   
