@@ -1,0 +1,77 @@
+body, html {
+    height: 100%;
+    margin: 0;
+    font-family: Arial, sans-serif;
+  }
+  
+  #container {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+  }
+  
+  #inputs {
+    flex-basis: 30%;
+    padding: 10px;
+    border-right: 2px solid #ddd;
+  }
+  
+  #drawingArea {
+    flex-grow: 1;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f9f9f9;
+  }
+  
+  input[type="number"], select {
+    width: 100%;
+    padding: 8px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+  
+  button {
+    width: 100%;
+    background-color: #4CAF50;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #45a049;
+  }
+  
+  #stats {
+    margin-top: 20px;
+  }
+  
+  #stats p {
+    margin: 5px 0;
+  }
+  
+  label {
+    margin-top: 10px;
+    display: block;
+  }
+  
+  /* This will be for later when we add responsiveness */
+  @media screen and (max-width: 600px) {
+    #container {
+      flex-direction: column;
+    }
+    
+    #inputs, #drawingArea {
+      flex-basis: auto;
+      width: 100%;
+    }
+  }
+  

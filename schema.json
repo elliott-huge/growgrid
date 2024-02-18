@@ -1,0 +1,86 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Plant Data Schema",
+  "description": "Schema for information about plants for gardening planning.",
+  "type": "object",
+  "properties": {
+    "plants": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "A unique identifier for the plant."
+          },
+          "commonName": {
+            "type": "string",
+            "description": "The common name of the plant."
+          },
+          "scientificName": {
+            "type": "string",
+            "description": "The scientific name of the plant."
+          },
+          "varieties": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": { "type": "string" },
+                "sowingMonths": {
+                  "type": "array",
+                  "items": { "type": "integer", "minimum": 1, "maximum": 12 }
+                },
+                "harvestMonths": {
+                  "type": "array",
+                  "items": { "type": "integer", "minimum": 1, "maximum": 12 }
+                },
+                "spacing": {
+                  "type": "object",
+                  "properties": {
+                    "aboveGround": { "$ref": "#/definitions/spacingDetails" },
+                    "belowGround": { "$ref": "#/definitions/spacingDetails" }
+                  },
+                  "required": ["aboveGround", "belowGround"]
+                },
+                "typicalHeight": { "$ref": "#/definitions/measurement" },
+                "companionPlants": { "type": "array", "items": { "type": "string" } },
+                "avoidPlants": { "type": "array", "items": { "type": "string" } }
+              },
+              "required": ["name", "sowingMonths", "harvestMonths", "spacing"]
+            }
+          },
+          "description": { "type": "string" },
+          "sunlight": { "type": "string" },
+          "watering": { "type": "string" },
+          "soil": { "type": "string" },
+          "growthPeriod": { "$ref": "#/definitions/measurement" },
+          "yieldPerPlant": { "$ref": "#/definitions/measurement" },
+          "difficulty": { "type": "string" }
+        },
+        "required": ["id", "commonName", "scientificName", "varieties"]
+      }
+    }
+  },
+  "definitions": {
+    "spacingDetails": {
+      "type": "object",
+      "properties": {
+        "metric": { "$ref": "#/definitions/measurement" },
+        "imperial": { "$ref": "#/definitions/measurement" }
+      },
+      "required": ["metric", "imperial"]
+    },
+    "measurement": {
+      "type": "object",
+      "properties": {
+        "radius": { "type": "number", "minimum": 0 },
+        "days": { "type": "integer", "minimum": 0 },
+        "kg": { "type": "number", "minimum": 0 },
+        "lbs": { "type": "number", "minimum": 0 }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

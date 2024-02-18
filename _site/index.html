@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GrowGrid</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="container">
+        <div id="inputs">
+            <label for="units">Pick Units:</label>
+            <select id="units">
+                <option value="metric">Metric (cm/m)</option>
+                <option value="imperial">Imperial (in/ft)</option>
+            </select>
+
+            <label for="rectWidth">Rect Width:</label>
+            <input type="number" id="rectWidth" placeholder="Width">
+
+            <label for="rectHeight">Rect Height:</label>
+            <input type="number" id="rectHeight" placeholder="Height">
+
+            <label for="plantSelection">Choose Plant:</label>
+            <select id="plantSelection">
+                <!-- Options will be dynamically loaded from plants.json -->
+            </select>
+            <label for="varietySelection">Choose Variety:</label>
+            <select id="varietySelection">
+                <!-- Variety options will be dynamically loaded based on species selection -->
+            </select>
+            <button id="generate">Generate Grid</button>
+            <button id="exportButton">Export as PNG</button>
+        </div>
+        <div id="drawingArea">
+            <canvas id="gardenCanvas"></canvas>
+        </div>
+        
+        <div id="stats">
+            <p id="numPlants">Number of plants: <span></span></p>
+            <p id="coverage">Percentage coverage: <span></span></p>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
