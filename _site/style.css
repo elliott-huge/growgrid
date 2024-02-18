@@ -1,24 +1,34 @@
+
+
 body, html {
     height: 100%;
     margin: 0;
     font-family: Arial, sans-serif;
   }
   
+  .input-group {
+    display: inline-flex; /* Make each group a flex container */
+    flex-direction: column; /* Stack label and input vertically */
+    margin-right: 12px; /* Add some space between the groups */
+    width: max-content;
+}
+
   #container {
     display: flex;
     justify-content: space-between;
-    padding: 20px;
+    padding: 24px;
+    min-height: 80vh;
   }
   
   #inputs {
     flex-basis: 30%;
-    padding: 10px;
+    padding: 12px;
     border-right: 2px solid #ddd;
   }
   
   #drawingArea {
     flex-grow: 1;
-    padding: 10px;
+    padding: 12px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -37,32 +47,55 @@ body, html {
   
   button {
     width: 100%;
-    background-color: #4CAF50;
+    background-color: #0b5b0d;
     color: white;
-    padding: 14px 20px;
-    margin: 8px 0;
+    padding: 12px 24px;
+    margin: 8px 2px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    font-weight: bold;
+    font-size: 1.2em;
+    opacity: 0.95;
   }
   
   button:hover {
-    background-color: #45a049;
+    opacity: 1;
+    border: solid black 4px;
+    margin: 6px 0;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    text-decoration-thickness: 2.5px;
   }
+
+  .checkbox-container {
+    display: flex;
+    align-items: center; /* This vertically aligns the checkbox with the label text */
+}
+
+.checkbox-container label {
+    margin-top: 0;
+    margin-right: 8px;
+}
   
   #stats {
-    margin-top: 20px;
+    margin-top: 16px;
+    margin-left: 4px;
   }
   
   #stats p {
-    margin: 5px 0;
+    margin: 4px 0;
   }
   
   label {
-    margin-top: 10px;
+    margin-top: 12px;
     display: block;
   }
   
+  h1 {
+   margin-left: 16px; 
+  }
+
   /* This will be for later when we add responsiveness */
   @media screen and (max-width: 600px) {
     #container {
