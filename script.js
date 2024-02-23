@@ -133,45 +133,32 @@ function drawPlant(ctx, x, y, varietyData) {
 function drawGrid(ctx, width, height, varietyData, units) {
   const aboveGroundRadius = varietyData.spacing.aboveGround.metric.radius;
   const belowGroundRadius = varietyData.spacing.belowGround.metric.radius;
-  const plantSpacing = Math.max(aboveGroundRadius, belowGroundRadius) * 2;
+  // Determine the larger radius to use for plant spacing
+  const plantRadius = Math.max(aboveGroundRadius, belowGroundRadius);
+  const plantSpacing = plantRadius * 2; // Spacing is twice the radius
   const staggeredPlanting = document.getElementById('staggeredPlantingCheckbox').checked;
-  let totalPlants = 0;  // Counter for the total number of plants
-
-  let plantsPerCol, staggeredRowHeight;
-  if (staggeredPlanting) {
-    staggeredRowHeight = Math.sqrt(3) / 2 * plantSpacing;
-    plantsPerCol = Math.floor(height / staggeredRowHeight);
-  } else {
-    plantsPerCol = Math.floor(height / plantSpacing);
+  
+  // Calculate row height based on planting pattern
+  let rowHeight = staggeredPlanting ? Math.sqrt(3) / 2 * plantSpacing : plantSpacing;
+  
+  // Calculate number of rows that can fit in the garden bed
+  let plantsPerCol = Math.floor(height / rowHeight);
+  if (!staggeredPlanting && height % rowHeight >= plantRadius) {
+    plantsPerCol += 1; // Allow an additional row if there's enough space in grid mode
   }
 
+  let totalPlants = 0;  // Counter for the total number of plants
   for (let row = 0; row < plantsPerCol; row++) {
-    let plantsPerRow;
-    if (staggeredPlanting) {
-      if (row % 2 !== 0) {
-        // For staggered rows, calculate the number of plants based on reduced width
-        plantsPerRow = Math.floor((width - plantSpacing) / plantSpacing);
-      } else {
-        plantsPerRow = Math.floor(width / plantSpacing);
-      }
-    } else {
-      // For regular grid rows, the number of plants per row is constant
-      plantsPerRow = Math.floor(width / plantSpacing);
-    }
+    let offsetX = staggeredPlanting && row % 2 !== 0 ? plantRadius : 0; // Offset for staggered rows
+    let availableWidth = width - offsetX;
+    let plantsPerRow = Math.floor(availableWidth / plantSpacing);
 
     for (let col = 0; col < plantsPerRow; col++) {
-      let x = col * plantSpacing + plantSpacing / 2;
-      let y = row * plantSpacing + plantSpacing / 2;
+      let x = col * plantSpacing + plantRadius + offsetX; // Adjust x-coordinate based on the planting pattern
+      let y = row * rowHeight + plantRadius; // Adjust y-coordinate based on the planting pattern
       
-      if (staggeredPlanting) {
-        y = row * staggeredRowHeight + plantSpacing / 2; // Adjust y for staggered rows
-        if (row % 2 !== 0) {
-          x += plantSpacing / 2; // Offset this row
-        }
-      }
-
       drawPlant(ctx, x, y, varietyData);
-      totalPlants++;
+      totalPlants++; // Increment total plant count
     }
   }
 
@@ -295,3 +282,4 @@ document.getElementById('generate').addEventListener('click', function() {
         drawGrid(ctx, width, height, varietyData, units); // Pass the correct varietyData here
     }
 });
+
