@@ -80,7 +80,7 @@ function updateCanvasSize() {
   });
   
 
-  
+
   function initializeCanvas(gardenWidth, gardenHeight) {
     const canvas = document.getElementById('gardenCanvas');
     if (canvas.getContext) {
@@ -102,56 +102,61 @@ function updateCanvasSize() {
     }
 }
 
+function drawCircle(ctx, x, y, radius, fillColor) {
+  ctx.beginPath();
+  ctx.arc(x, y, radius, 0, Math.PI * 2, false);
+  ctx.fillStyle = fillColor;
+  ctx.fill();
+}
+
+function drawPlant(ctx, x, y, varietyData) {
+  // Extract necessary data from varietyData
+  const aboveGroundRadius = varietyData.spacing.aboveGround.metric.radius;
+  const belowGroundRadius = varietyData.spacing.belowGround.metric.radius;
+  const abbreviation = varietyData.name.substring(0, 2); // Or adjust logic as needed
+
+  // Draw the underground radius circle in grey
+  drawCircle(ctx, x, y, belowGroundRadius, '#80808080'); // Semi-transparent grey
+
+  // Draw the above ground radius circle in green
+  drawCircle(ctx, x, y, aboveGroundRadius, '#00800040'); // Semi-transparent green
+
+  // Draw the plant abbreviation in white at the center
+  ctx.fillStyle = '#FFFFFF'; // White
+  ctx.font = 'bold 16px Arial';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(abbreviation, x, y);
+}
   
 // Function to draw the grid on the canvas, including underground spacing representation
 function drawGrid(ctx, width, height, varietyData, units) {
+  // Determine the larger spacing for overall plant spacing
+  const plantSpacing = Math.max(varietyData.spacing.aboveGround.metric.radius, varietyData.spacing.belowGround.metric.radius) * 2;
 
-    // Determine the larger spacing for overall plant spacing
-    const aboveGroundRadius = varietyData.spacing.aboveGround.metric.radius;
-    const belowGroundRadius = varietyData.spacing.belowGround.metric.radius;
-    const plantSpacing = Math.max(aboveGroundRadius, belowGroundRadius) * 2; // Use the larger radius for spacing calculation
+  // Calculate the number of plants per row and column based on the determined spacing
+  const plantsPerRow = Math.floor(width / plantSpacing);
+  const plantsPerCol = Math.floor(height / plantSpacing);
 
-    const abbreviation = varietyData.name.substring(0, 2);
-
-    // Calculate the number of plants per row and column based on the determined spacing
-    const plantsPerRow = Math.floor(width / plantSpacing);
-    const plantsPerCol = Math.floor(height / plantSpacing);
-
-    // Loop through each plant position and draw the circles
-    for (let row = 0; row < plantsPerCol; row++) {
+  // Loop through each plant position and draw the plants
+  for (let row = 0; row < plantsPerCol; row++) {
       for (let col = 0; col < plantsPerRow; col++) {
-        const x = col * plantSpacing + plantSpacing / 2;
-        const y = row * plantSpacing + plantSpacing / 2;
+          const x = col * plantSpacing + plantSpacing / 2;
+          const y = row * plantSpacing + plantSpacing / 2;
 
-        // Draw the underground radius circle in grey
-        ctx.beginPath();
-        ctx.arc(x, y, belowGroundRadius, 0, Math.PI * 2, false);
-        ctx.fillStyle = '#80808080'; // Semi-transparent grey
-        ctx.fill();
-
-        // Draw the above ground radius circle in green
-        ctx.beginPath();
-        ctx.arc(x, y, aboveGroundRadius, 0, Math.PI * 2, false);
-        ctx.fillStyle = '#00800040';
-        ctx.fill();
-
-        // Draw the plant abbreviation in white at the center
-        ctx.fillStyle = '#FFFFFF';
-        ctx.font = 'bold 16px Arial';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(abbreviation, x, y);
+          // Pass the whole varietyData object to drawPlant
+          drawPlant(ctx, x, y, varietyData);
       }
-    }
+  }
 
-    ctx.strokeStyle = '#000000'; // Black for the boundary
-    ctx.strokeRect(0, 0, width, height);
+  // Drawing the garden boundary and optionally the planting grid
+  ctx.strokeStyle = '#000000'; // Black for the boundary
+  ctx.strokeRect(0, 0, width, height);
 
-    const drawPlantingGrid = document.getElementById('drawPlantingGridCheckbox').checked;
-    if (drawPlantingGrid) {
-        drawPlantingGridLines(ctx, width, height, units);
-    }
-}  
+  if (document.getElementById('drawPlantingGridCheckbox').checked) {
+      drawPlantingGridLines(ctx, width, height, units);
+  }
+}
 
 function drawPlantingGridLines(ctx, width, height, units) {
     const gridSize = units === 'metric' ? 100 : 39.37; // 100 pixels = 1 meter or 39.37 pixels = 1 foot
