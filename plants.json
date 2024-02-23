@@ -40,6 +40,68 @@
         "imperial": { "lbs": 6.6 }
       },
       "difficulty": "medium"
+    },
+    {
+      "id": "pepper-chili",
+      "commonName": "Chili Pepper",
+      "scientificName": "Capsicum annuum",
+      "varieties": [
+        {
+          "name": "Sugar Rush Peach",
+          "sowingMonths": [2, 3, 4],
+          "harvestMonths": [6, 7, 8, 9],
+          "spacing": {
+            "aboveGround": {
+              "metric": { "radius": 45 },
+              "imperial": { "radius": 18 }
+            },
+            "belowGround": {
+              "metric": { "radius": 35 },
+              "imperial": { "radius": 14 }
+            }
+          },
+          "typicalHeight": {
+            "metric": 120,
+            "imperial": 47
+          },
+          "companionPlants": ["basil", "oregano", "parsley"],
+          "avoidPlants": ["beans", "kale", "brussels sprouts"]
+        },
+        {
+          "name": "Bell Pepper",
+          "sowingMonths": [2, 3, 4],
+          "harvestMonths": [7, 8, 9],
+          "spacing": {
+            "aboveGround": {
+              "metric": { "radius": 50 },
+              "imperial": { "radius": 20 }
+            },
+            "belowGround": {
+              "metric": { "radius": 40 },
+              "imperial": { "radius": 16 }
+            }
+          },
+          "typicalHeight": {
+            "metric": 100,
+            "imperial": 39
+          },
+          "companionPlants": ["carrots", "onions", "spinach"],
+          "avoidPlants": ["fennel", "kohlrabi"]
+        }
+      ],
+      "description": "Chili peppers are widely used in many cuisines to add spiciness to dishes. The substances that give chili peppers their intensity when ingested or applied topically are capsaicin and related compounds known as capsaicinoids.",
+      "sunlight": "full",
+      "watering": "regular",
+      "soil": "well-drained",
+      "growthPeriod": {
+        "metric": { "days": 70 },
+        "imperial": { "days": 70 }
+      },
+      "yieldPerPlant": {
+        "metric": { "kg": 2 },
+        "imperial": { "lbs": 4.4 }
+      },
+      "difficulty": "moderate"
     }
   ]
 }
