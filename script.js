@@ -131,22 +131,48 @@ function drawPlant(ctx, x, y, varietyData) {
   
 // Function to draw the grid on the canvas, including underground spacing representation
 function drawGrid(ctx, width, height, varietyData, units) {
-  // Determine the larger spacing for overall plant spacing
-  const plantSpacing = Math.max(varietyData.spacing.aboveGround.metric.radius, varietyData.spacing.belowGround.metric.radius) * 2;
+  const aboveGroundRadius = varietyData.spacing.aboveGround.metric.radius;
+  const belowGroundRadius = varietyData.spacing.belowGround.metric.radius;
+  const plantSpacing = Math.max(aboveGroundRadius, belowGroundRadius) * 2;
+  const staggeredPlanting = document.getElementById('staggeredPlantingCheckbox').checked;
+  let totalPlants = 0;  // Counter for the total number of plants
 
-  // Calculate the number of plants per row and column based on the determined spacing
-  const plantsPerRow = Math.floor(width / plantSpacing);
-  const plantsPerCol = Math.floor(height / plantSpacing);
+  let plantsPerCol, staggeredRowHeight;
+  if (staggeredPlanting) {
+    staggeredRowHeight = Math.sqrt(3) / 2 * plantSpacing;
+    plantsPerCol = Math.floor(height / staggeredRowHeight);
+  } else {
+    plantsPerCol = Math.floor(height / plantSpacing);
+  }
 
-  // Loop through each plant position and draw the plants
   for (let row = 0; row < plantsPerCol; row++) {
-      for (let col = 0; col < plantsPerRow; col++) {
-          const x = col * plantSpacing + plantSpacing / 2;
-          const y = row * plantSpacing + plantSpacing / 2;
-
-          // Pass the whole varietyData object to drawPlant
-          drawPlant(ctx, x, y, varietyData);
+    let plantsPerRow;
+    if (staggeredPlanting) {
+      if (row % 2 !== 0) {
+        // For staggered rows, calculate the number of plants based on reduced width
+        plantsPerRow = Math.floor((width - plantSpacing) / plantSpacing);
+      } else {
+        plantsPerRow = Math.floor(width / plantSpacing);
       }
+    } else {
+      // For regular grid rows, the number of plants per row is constant
+      plantsPerRow = Math.floor(width / plantSpacing);
+    }
+
+    for (let col = 0; col < plantsPerRow; col++) {
+      let x = col * plantSpacing + plantSpacing / 2;
+      let y = row * plantSpacing + plantSpacing / 2;
+      
+      if (staggeredPlanting) {
+        y = row * staggeredRowHeight + plantSpacing / 2; // Adjust y for staggered rows
+        if (row % 2 !== 0) {
+          x += plantSpacing / 2; // Offset this row
+        }
+      }
+
+      drawPlant(ctx, x, y, varietyData);
+      totalPlants++;
+    }
   }
 
   // Drawing the garden boundary and optionally the planting grid
@@ -154,9 +180,28 @@ function drawGrid(ctx, width, height, varietyData, units) {
   ctx.strokeRect(0, 0, width, height);
 
   if (document.getElementById('drawPlantingGridCheckbox').checked) {
-      drawPlantingGridLines(ctx, width, height, units);
+    drawPlantingGridLines(ctx, width, height, units);
   }
+
+  updateGardenStats(totalPlants, aboveGroundRadius, width, height);
 }
+
+function updateGardenStats(totalPlants, plantRadius, width, height) {
+  document.getElementById('numPlants').innerText = `${totalPlants}`;
+
+  // Calculate the coverage area using the plant radius in cm
+  const singlePlantArea = Math.PI * plantRadius * plantRadius; // in square cm
+  const totalPlantArea = singlePlantArea * totalPlants; // in square cm
+
+  // Garden area is already in square cm since 1 pixel = 1 cm
+  const gardenArea = width * height; // in square cm
+
+  // Calculate percentage coverage
+  let coverage = ((totalPlantArea / gardenArea) * 100).toFixed(2);
+  document.getElementById('coverage').innerText = `${coverage}%`;
+}
+
+
 
 function drawPlantingGridLines(ctx, width, height, units) {
     const gridSize = units === 'metric' ? 100 : 39.37; // 100 pixels = 1 meter or 39.37 pixels = 1 foot

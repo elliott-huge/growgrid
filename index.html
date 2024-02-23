@@ -46,14 +46,13 @@
             <br>
             <button id="generate">Draw Plantbed</button>
             <button id="exportButton" style="background-color: #201581;">Export as Image</button>
+            <div id="stats">
+                <p>Number of plants: <span id="numPlants"></span></p>
+                <p>Plantbed coverage: <span id="coverage"></span></p>
+            </div>
         </div>
         <div id="drawingArea">
             <canvas id="gardenCanvas"></canvas>
-        </div>
-        
-        <div id="stats">
-            <p id="numPlants">Number of plants: <span></span></p>
-            <p id="coverage">Percentage coverage: <span></span></p>
         </div>
     </div>
     <script src="script.js"></script>
