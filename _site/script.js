@@ -80,6 +80,7 @@ function updateCanvasSize() {
   });
   
 
+  
   function initializeCanvas(gardenWidth, gardenHeight) {
     const canvas = document.getElementById('gardenCanvas');
     if (canvas.getContext) {
