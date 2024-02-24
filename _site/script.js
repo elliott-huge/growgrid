@@ -133,20 +133,24 @@ function drawPlant(ctx, x, y, varietyData) {
 function drawGrid(ctx, width, height, varietyData, units) {
   const aboveGroundRadius = varietyData.spacing.aboveGround.metric.radius;
   const belowGroundRadius = varietyData.spacing.belowGround.metric.radius;
-  // Determine the larger radius to use for plant spacing
   const plantRadius = Math.max(aboveGroundRadius, belowGroundRadius);
   const plantSpacing = plantRadius * 2; // Spacing is twice the radius
   const staggeredPlanting = document.getElementById('staggeredPlantingCheckbox').checked;
   
   // Calculate row height based on planting pattern
-  let rowHeight = staggeredPlanting ? Math.sqrt(3) / 2 * plantSpacing : plantSpacing;
+  let rowHeight = staggeredPlanting ? Math.sqrt(Math.pow(plantSpacing,2) - Math.pow(plantRadius,2)): plantSpacing;
+  console.log(rowHeight);
+  console.log(plantSpacing);
+  console.log(height);
   
   // Calculate number of rows that can fit in the garden bed
-  let plantsPerCol = Math.floor(height / rowHeight);
+  // TODO: fix this
+  let plantsPerCol = staggeredPlanting ? Math.floor((height / rowHeight) - 0.1) : Math.floor(height / plantSpacing);
+  console.log(plantsPerCol);
   if (!staggeredPlanting && height % rowHeight >= plantRadius) {
     plantsPerCol += 1; // Allow an additional row if there's enough space in grid mode
   }
-
+  console.log(plantsPerCol);
   let totalPlants = 0;  // Counter for the total number of plants
   for (let row = 0; row < plantsPerCol; row++) {
     let offsetX = staggeredPlanting && row % 2 !== 0 ? plantRadius : 0; // Offset for staggered rows
